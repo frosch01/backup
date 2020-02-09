@@ -59,6 +59,7 @@ shift $((OPTIND-1))
 # Check for expected variables to be present
 [ -n "${RSYNC_HOST}" ] || { echo "RSYNC_HOST is mandatory to be set in ${CLIENT_CONFIG_FILE}" 1>&2; exit 1; }
 [ -n "${WORKING_DIR}" ] || WORKING_DIR=/tmp/backup.dir || true
+[ -n "${FULL_PATH}" ] || FULL_PATH=true || true
 
 # Check backup list to be present
 [ -f "${BACKUP_LIST_FILE}" ] || { echo "backup list file ${BACKUP_LIST_FILE} not found" 1>&2; exit 1; }
@@ -89,10 +90,11 @@ fi
 # -l copy symlinks as symlinks
 # -u skip files that are newer on the receiver
 # -R Use relative paths. This means that the full path names specified on the command line are sent to the server rather than just the last parts of the filenames.
-BASIC_OPTS="-r -t -p -l -u -R"
+BASIC_OPTS="-r -t -p -l -u"
 BACKUP_OPTS="--delete-after --delete-excluded --backup --backup-dir=deleted/`date +%F`"
 EXCLUDE_OPTS="--exclude=**/*tmp*/ --exclude=**/*cache*/ --exclude=**/*Cache*/ --exclude=**~ --exclude=**/*Trash*/ --exclude=**/*trash*/ --exclude=**/.gvfs/"
-if $INTERACTIVE; then INTERACTVE_OPTS="-h --progress --stats"; fi
+if ${INTERACTIVE}; then INTERACTVE_OPTS="-h --progress --stats"; fi
+if ${FULL_PATH} ; then FULL_PATH_OPTS="-R"; fi
 
 # A stubbed function in case of dryrun without interactive terminal
 function rsync_stub {
@@ -106,7 +108,7 @@ function rsync_backup {
   if $DEBUG; then
     echo "Backing up ${LOCAL_DIR} to ${BACKUP_REMOTE}"
   fi
-  if ${RSYNC} ${BASIC_OPTS} ${INTERACTVE_OPTS} ${BACKUP_OPTS} ${EXCLUDE_OPTS} ${LOCAL_DIR} ${BACKUP_REMOTE}; then
+  if ${RSYNC} ${BASIC_OPTS} ${FULL_PATH_OPTS} ${INTERACTVE_OPTS} ${BACKUP_OPTS} ${EXCLUDE_OPTS} ${LOCAL_DIR} ${BACKUP_REMOTE}; then
     if ! ${DRYRUN}; then
       date +%F >> ${LOCAL_DIR}/.backuptag
     fi
