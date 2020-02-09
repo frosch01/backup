@@ -124,6 +124,7 @@ BACKUP_LIST=`get_backup_list`
 for ENTRY in $BACKUP_LIST; do
   if [[ $ENTRY == \[*\] ]]; then
     RSYNC_MODULE=${ENTRY:1:-1}
+    LOCAL_DIR=""
   else
     LOCAL_DIR=${ENTRY}
   fi
