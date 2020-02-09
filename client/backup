@@ -1,0 +1,15 @@
+#!/bin/sh
+# This is an anacron script to be added to /etc/cron.daily
+
+# Exit on each error
+set -e
+
+# Load backupscript from cubie NAS
+BACKUP_DIR=/tmp/backup.dir
+mkdir -p ${BACKUP_DIR}
+cd ${BACKUP_DIR}
+BACKUP_SCRIPT=backup-to-cache.sh
+rsync -r cubie::backup_config/${BACKUP_SCRIPT} .
+
+# Execute backup script. This will recognize all directories given in /etc/backup.list
+./${BACKUP_SCRIPT}
