@@ -11,5 +11,6 @@ cd ${BACKUP_DIR}
 BACKUP_SCRIPT=backup-to-cache.sh
 rsync -r cubie::backup_config/${BACKUP_SCRIPT} .
 
-# Execute backup script. This will recognize all directories given in /etc/backup.list
+# Execute backup script. This will recognize all directories given in
+# /etc/backup/backup.list.
 ./${BACKUP_SCRIPT}
