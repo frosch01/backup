@@ -29,7 +29,7 @@ done
 shift $((OPTIND-1))
 
 # Load configuration file settings
-source ./backup_env.sh -f ${CACHE_CONFIG_FILE}
+source ./borg_env.sh -f ${CACHE_CONFIG_FILE}
 
 # Command aliases
 DATE=$(date +%F)
