@@ -74,13 +74,9 @@ if ${INTERACTIVE}; then
     echo "WORKING_DIR=${WORKING_DIR}"
     echo "DEBUG=${DEBUG}"
   fi
-  if ${DRYRUN}; then
-    RSYNC="echo rsync"
-  fi
+  if ${DRYRUN}; then RSYNC="echo rsync"; fi
 else
-  if ${DRYRUN}; then
-    RSYNC="rsync_stub"
-  fi
+  if ${DRYRUN}; then RSYNC="rsync_stub"; fi
 fi
 
 # Rsync options explained
