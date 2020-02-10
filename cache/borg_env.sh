@@ -47,7 +47,7 @@ if [ ! -r "${SSH_PRIVATE_KEY_FILE}" ]; then
   fi
 fi
 
-# Add provate key to ssh-agent. Start agent if not runing
+# Add private key to ssh-agent. Start agent if not runing
 if [[ ! -v SSH_AGENT_PID ]]; then
   eval `ssh-agent` || { echo "starting ssh-agent failed" 1>&2; return 1; }
 fi
@@ -55,7 +55,7 @@ if ! ssh-add -l | grep -q ${SSH_PRIVATE_KEY_FILE}; then
   ssh-add ${SSH_PRIVATE_KEY_FILE} || { echo "Adding private key ${SSH_PRIVATE_KEY_FILE} to ssh-agent failed"; return 1; }
 fi
 
-# Export / clean environment
+# Export environment for borg usage
 export BORG_REPO="ssh://u174119@u174119.your-storagebox.de:23/./Backup/cubie"
 export BORG_REMOTE_PATH="borg-1.1"
 echo -n "Please give password for backup repository $BORG_REPO: "
