@@ -47,12 +47,12 @@ function backup_dir {
   ${BORG} create --exclude "${EXCLUDE}" --progress --stats ::${ARCHIVE} ${DIR}
 }
 
-#backup_dir /data/media/fotos
-#backup_dir /data/media/videos
-#backup_dir /data/einstein 1
-#backup_dir /data/vdr
+backup_dir /data/media/fotos
+backup_dir /data/media/videos
+backup_dir /data/einstein 1
+backup_dir /data/vdr
 backup_dir /data/cubie
-#backup_dir /data/android_ralph
+backup_dir /data/android_ralph
 
 ssh-agent -k
 exit 0
