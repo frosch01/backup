@@ -1,9 +1,8 @@
 #!/bin/bash
 
-#!/bin/sh
-# This script is intended to be used an anacron script to be addd to
-# /etc/cron.daily. It may be also invoced on an interactive shell
-# As anacron is often based on sh, this script is written for sh
+# This script is stored on cache. It's downloaded by the clients and executed
+# to create a backup by the client. On the cache, it is stored at the location
+# of the backup_config rsync module (::backup_config)
 
 # Exit on any error
 set -e
@@ -101,10 +100,11 @@ function rsync_stub {
 function rsync_backup {
   LOCAL_DIR=$1
   BACKUP_REMOTE="${RSYNC_HOST}::$2"
+  EXTRA_OPTS=$3
   if $DEBUG; then
-    echo "Backing up ${LOCAL_DIR} to ${BACKUP_REMOTE}"
+    echo "Backing up ${LOCAL_DIR} to ${BACKUP_REMOTE} with extra opts: ${EXTRA_OPTS}"
   fi
-  if ${RSYNC} ${BASIC_OPTS} ${FULL_PATH_OPTS} ${INTERACTVE_OPTS} ${BACKUP_OPTS} ${EXCLUDE_OPTS} ${LOCAL_DIR} ${BACKUP_REMOTE}; then
+  if ${RSYNC} ${BASIC_OPTS} ${FULL_PATH_OPTS} ${INTERACTVE_OPTS} ${BACKUP_OPTS} ${EXCLUDE_OPTS} ${EXTRA_OPTS} ${LOCAL_DIR} ${BACKUP_REMOTE}; then
     if ! ${DRYRUN}; then
       date +%F >> ${LOCAL_DIR}/.backuptag
     fi
@@ -119,13 +119,19 @@ function get_backup_list {
 }
 
 BACKUP_LIST=`get_backup_list`
-for ENTRY in $BACKUP_LIST; do
+while read -r ENTRY; do
   if [[ $ENTRY == \[*\] ]]; then
+    # remove square brackets
     RSYNC_MODULE=${ENTRY:1:-1}
     LOCAL_DIR=""
+    EXTRA_OPTS=""
   else
-    LOCAL_DIR=${ENTRY}
+    EXTRA_OPTS=""
+    LOCAL_DIR=${ENTRY%,*}
+    if [ "${LOCAL_DIR}" != "${ENTRY}" ]; then
+        EXTRA_OPTS=${ENTRY#*,}
+    fi
   fi
   [ -n "${RSYNC_MODULE}" ] || { echo "RSYNC_MODULE is mandatory to be given in ${BACKUP_LIST_FILE}" 1>&2; exit 1; }
-  [ -n "${LOCAL_DIR}" ] && rsync_backup ${LOCAL_DIR} ${RSYNC_MODULE}
-done
+  [ -n "${LOCAL_DIR}" ] && rsync_backup ${LOCAL_DIR} ${RSYNC_MODULE} "${EXTRA_OPTS}"
+done < <(echo "$BACKUP_LIST")

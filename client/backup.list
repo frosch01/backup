@@ -3,8 +3,10 @@
 
 # Location on server is backup_vdr
 [backup_vdr]
-# On this machine the home contains important data...
-/home
+# On this machine the home contains important data. Videos shall be ignored
+# There can given any extra options to rsync after a comma. Please refer to
+# rsync documentation for details
+/home, --exclude=Videos --exclude=Downloads --exclude=*.mp4 --exclude=*.m4v
 
 # /etc to preserve settings in VDR and other system stuff
 /etc
