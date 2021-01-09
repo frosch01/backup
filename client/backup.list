@@ -1,0 +1,14 @@
+# This file contains a list of directories to be recognized by backup client
+# The file shall be placed at /etc/backup/
+
+# Location on server is backup_vdr
+[backup_vdr]
+# On this machine the home contains important data...
+/home
+
+# /etc to preserve settings in VDR and other system stuff
+/etc
+
+# VDR directories. Nothing valuable expected herein but justg to be sure nothing is lost...
+/var/lib/vdr     # The run directory of vdr
+/usr/share/vdr   # As populated by debian packages

@@ -36,6 +36,21 @@ DATE=$(date +%F)
 BORG=borg
 if ${DRYRUN}; then BORG="echo borg"; fi
 
+# backup_dir <backup-dir> [rsync_backup-level]
+#
+# Create borg backup archive from the given backup directory. The name of
+# the borg archive is taken from the last path component.
+# "deleted" directory as created by rsync are excluded from the backup.
+# Depending on the ways rsync is used, there is perhaps more than 1 rsync
+# source that uses a backup directory. So deleted directory is not always
+# found at the root of the backup directory. With the 2nd arugment, one may
+# give the number of additional path levels in use by rsync.
+#
+# PARAMETERS:
+# backup-dir:         Directory that shall be pushed to borg server
+# rsync-backup-level: Additinal path levels to the backups directory
+# return:             The exit code from borg create.
+#
 function backup_dir {
   DIR=$1
   if [[ $# == 2 ]]; then LEVEL=$2; else LEVEL=0; fi
@@ -56,38 +71,3 @@ backup_dir /data/android_ralph
 
 ssh-agent -k
 exit 0
-
-echo "Creating backup of `du -hs /data/media/fotos`"
-echo
-borg create --progress ::${DATE}_fotos          /data/media/fotos   || exit 1
-
-echo
-echo "Creating backup of `du -hs /data/media/videos`"
-echo
-borg create --progress ::${DATE}_videos         /data/media/videos || exit 2
-
-echo
-echo "Creating backup of `du -hs /data/einstein`"
-echo
-borg create --progress ::${DATE}_einstein      /data/einstein      || exit 3
-
-echo
-echo "Creating backup of `du -hs /data/vdr`"
-echo
-borg create --progress ::${DATE}_vdr           /data/vdr           || exit 4
-
-echo
-echo "Creating backup of `du -hs /data/cubie`"
-echo
-borg create --progress ::${DATE}_cubie         /data/cubie         || exit 5
-
-echo
-echo "Creating backup of `du -hs /data/android_ralph`"
-echo
-borg create --progress ::${DATE}_android_ralph /data/android_ralph || exit 6
-
-echo
-ssh-agent -k
-
-exit 0
-

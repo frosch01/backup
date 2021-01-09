@@ -4,12 +4,20 @@
 # Exit on each error
 set -e
 
+# Load system wide backup configuration
+CLIENT_CONFIG_FILE=/etc/backup/client.conf
+[ -f "${CLIENT_CONFIG_FILE}" ] || { echo "Configuration file ${CLIENT_CONFIG_FILE} not found" 1>&2; exit 1; }
+. ${CLIENT_CONFIG_FILE}
+
+# Check for arguments required by this script
+[ -n "${RSYNC_HOST}" ] || { echo "RSYNC_HOST is mandatory to be set in ${CLIENT_CONFIG_FILE}" 1>&2; exit 1; }
+
 # Load backupscript from cubie NAS
 BACKUP_DIR=/tmp/backup.dir
 mkdir -p ${BACKUP_DIR}
 cd ${BACKUP_DIR}
 BACKUP_SCRIPT=backup-to-cache.sh
-rsync -r cubie::backup_config/${BACKUP_SCRIPT} .
+rsync -r ${RSYNC_HOST}::backup_config/${BACKUP_SCRIPT} .
 
 # Execute backup script. This will recognize all directories given in
 # /etc/backup/backup.list.
