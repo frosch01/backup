@@ -29,7 +29,7 @@ done
 shift $((OPTIND-1))
 
 # Load configuration file settings
-#source ./borg_env.sh -f ${CACHE_CONFIG_FILE}
+source ./borg_env.sh -f ${CACHE_CONFIG_FILE}
 
 BORG_DEL="borg delete -s"
 BORG_INFO="borg info"
